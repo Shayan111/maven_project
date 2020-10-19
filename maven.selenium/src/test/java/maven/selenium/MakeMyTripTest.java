@@ -2,6 +2,7 @@ package maven.selenium;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 import org.openqa.selenium.By;
@@ -22,10 +23,11 @@ import org.junit.AfterClass;
 public class MakeMyTripTest {
 	
 	public static WebDriver driver;
+	public static String path = System.getProperty("user.dir");
 	@BeforeClass
 	public static void before_test()
 	{
-		System.setProperty("webdriver.chrome.driver", "/Users/shayan/Downloads/chromedriver");
+		System.setProperty("webdriver.chrome.driver", path+"/chromedriver");
 		driver = new ChromeDriver();
 	}
 	
@@ -34,13 +36,12 @@ public class MakeMyTripTest {
 	@Test
 	public void main_test() throws FileNotFoundException, IOException, InterruptedException, NoSuchFrameException
 	{
-		String path = System.getProperty("user.dir");
+
 		FileInputStream makemytrip_file= new FileInputStream(path+"/input_details.properties");
 		Properties makemytrip_properties = new Properties();
 		makemytrip_properties.load(makemytrip_file);
 
-		System.setProperty("webdriver.chrome.driver", path+"/chromedriver");
-		driver = new ChromeDriver();
+		
 		WebDriverWait wait = new WebDriverWait(driver, 20);
 
 		driver.get(makemytrip_properties.getProperty("URL"));
@@ -51,23 +52,20 @@ public class MakeMyTripTest {
 		
 		Thread.sleep(50000);
 	
-		
-		int size = driver.findElements(By.tagName("iframe")).size();
-		System.out.println(size);
-		for(int i=0;i<size;i++)
-		{
-			driver.switchTo().frame(i);
+
+		List<WebElement> iframes = driver.findElements(By.tagName("iframe"));
+		for(int i=0;i<iframes.size();i++)
+		{	
+			
+			ExpectedConditions.frameToBeAvailableAndSwitchToIt(iframes.get(i));
 			if (driver.findElements(By.xpath("//i[@class='wewidgeticon we_close']")).size()>0)
 			{
-				System.out.println(size);
 				driver.findElement(By.xpath("//i[@class='wewidgeticon we_close']")).click();
 				driver.switchTo().window(handle);
 				break;
 			}
-			driver.switchTo().window(handle);
 		}
 		
-		//p[text()='Login/Signup for Best Prices']
 		if (driver.findElements(By.xpath("//p[text()='Login/Signup for Best Prices']")).size()>0)
 		{
 			driver.findElement(By.xpath("//p[contains(text(),'Login or Create Account')]")).click();
