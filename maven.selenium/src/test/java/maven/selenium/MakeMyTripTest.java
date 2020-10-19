@@ -64,6 +64,10 @@ public class MakeMyTripTest {
 				driver.switchTo().window(handle);
 				break;
 			}
+			if (driver.getWindowHandle().equals(handle) == false)
+				{
+						driver.switchTo().window(handle);
+				}
 		}
 		
 		if (driver.findElements(By.xpath("//p[text()='Login/Signup for Best Prices']")).size()>0)
